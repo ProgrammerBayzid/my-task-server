@@ -72,6 +72,45 @@ async function run() {
         });
 
 
+        app.get('/orders', async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = oderCollection.find(query);
+            const order = await cursor.toArray();
+            res.send(order)
+        });
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await oderCollection.insertOne(order);
+            res.send(result)
+        });
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await oderCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
+
+        app.delete('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await reviewCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.patch('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body })
+            res.send(result)
+        })
+
 
     }
     finally {
@@ -79,7 +118,6 @@ async function run() {
     }
 }
 run().catch(err => console.error(err))
-
 
 
 
