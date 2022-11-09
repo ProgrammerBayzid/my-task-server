@@ -120,11 +120,7 @@ async function run() {
         })
 
 
-        app.post('/reviews', async (req, res) => {
-            const review = req.body;
-            const result = await reviewCollection.insertOne(review);
-            res.send(result)
-        });
+        djfas
 
 
         app.get('/orders', verifyJWT, async (req, res) => {
