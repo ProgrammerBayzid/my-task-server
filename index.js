@@ -57,7 +57,7 @@ async function run() {
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '10s' })
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '30d' })
             res.send({ token })
         })
 
@@ -92,6 +92,12 @@ async function run() {
             const service = await servicesCollection.findOne(query);
             res.send(service)
         });
+        app.get('/allreviews', async (req, res) => {
+            const query = {}
+            const cursor = reviewCollection.find(query);
+            const feedback = await cursor.toArray();
+            res.send(feedback)
+        });
 
 
         // reviews api
@@ -99,7 +105,7 @@ async function run() {
             const decoded = req.decoded;
             console.log('insude order api', decoded);
             if (decoded.email !== req.query.email) {
-                res.status(403).send({ message: 'unauthorized access' })
+                return res.status(403).send({ message: 'unauthorized access' })
             }
 
             let query = {};
@@ -123,10 +129,10 @@ async function run() {
 
         app.get('/orders', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
-            console.log('insude order api', decoded);
-
+            console.log('decoded', decoded.email);
+            console.log("query", req.query.email);
             if (decoded.email !== req.query.email) {
-                res.status(403).send({ message: 'unauthorized access' })
+                return res.status(403).send({ message: 'unauthorized access' })
             }
             let query = {};
             if (req.query.email) {
@@ -136,6 +142,7 @@ async function run() {
             }
             const cursor = oderCollection.find(query);
             const order = await cursor.toArray();
+            console.log(order);
             res.send(order)
         });
 
