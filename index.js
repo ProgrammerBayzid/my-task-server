@@ -146,7 +146,11 @@ async function run() {
             res.send(order)
         });
 
-        dfbafhvv
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await oderCollection.insertOne(order);
+            res.send(result)
+        });
 
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
