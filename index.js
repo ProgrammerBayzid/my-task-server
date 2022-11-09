@@ -167,11 +167,7 @@ async function run() {
             res.send(result)
         })
 
-        app.patch('/reviews/:id', async (req, res) => {
-            const id = req.params.id;
-            const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body })
-            res.send(result)
-        })
+        sdfa
 
 
     }
