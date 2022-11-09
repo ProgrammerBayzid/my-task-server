@@ -24,19 +24,19 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        res.status(401).send({
+        return res.status(401).send({
             message: 'unauthorized access'
         })
     }
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
-            res.status(403).send({
+            return res.status(403).send({
                 message: 'unauthorized access'
             })
         }
         req.decoded = decoded;
-        next()
+        next();
     })
 };
 
@@ -57,7 +57,7 @@ async function run() {
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '10' })
             res.send({ token })
         })
 
@@ -98,6 +98,10 @@ async function run() {
         app.get('/reviews', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
             console.log('insude order api', decoded);
+            if (decoded.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
+            }
+
             let query = {};
             if (req.query.email) {
                 query = {
@@ -120,6 +124,10 @@ async function run() {
         app.get('/orders', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
             console.log('insude order api', decoded);
+
+            if (decoded.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
+            }
             let query = {};
             if (req.query.email) {
                 query = {
