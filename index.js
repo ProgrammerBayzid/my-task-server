@@ -98,6 +98,13 @@ async function run() {
             const feedback = await cursor.toArray();
             res.send(feedback)
         });
+        app.get('/service/reviews/:id', async (req, res) => {
+            const service = req.params.service;
+            const query = { service: (service) }
+            const cursor = reviewCollection.filter(query);
+            const feedback = await cursor.toArray();
+            res.send(feedback)
+        });
 
 
         // reviews api
@@ -114,10 +121,10 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = reviewCollection.find(query);
+            const cursor = reviewCollection.find(query).sort({ time: 1 });
             const review = await cursor.toArray();
             res.send(review)
-        })
+        });
 
 
         app.post('/reviews', async (req, res) => {
@@ -167,9 +174,20 @@ async function run() {
             res.send(result)
         })
 
-        app.patch('/reviews/:id', async (req, res) => {
+        app.patch('/patch/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body })
+            const reviewerName = req.body.reviewerName;
+            const ratting = req.body.ratting;
+            const feedback = req.body.feedback;
+            const query = { _id: ObjectId(id) };
+            const updatedUser = {
+                $set: {
+                    reviewerName: reviewerName,
+                    ratting: ratting,
+                    feedback: feedback
+                }
+            };
+            const result = await reviewCollection.updateOne(query, updatedUser)
             res.send(result)
         })
 
