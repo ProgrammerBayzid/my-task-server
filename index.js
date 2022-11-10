@@ -98,13 +98,8 @@ async function run() {
             const feedback = await cursor.toArray();
             res.send(feedback)
         });
-        app.get('/service/reviews/:id', async (req, res) => {
-            const service = req.params.service;
-            const query = { service: (service) }
-            const cursor = reviewCollection.filter(query);
-            const feedback = await cursor.toArray();
-            res.send(feedback)
-        });
+
+
 
 
         // reviews api
