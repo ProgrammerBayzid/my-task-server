@@ -93,8 +93,12 @@ async function run() {
             res.send(service)
         });
         app.get('/allreviews', async (req, res) => {
-            const query = {}
-            const cursor = reviewCollection.find(query);
+            let query = {}
+            const limit = parseInt(req.query.limit) || 0;
+            if (req.query.service) {
+                query = { service: req.query.service }
+            }
+            const cursor = reviewCollection.find(query).sort({ _id: -1 }).limit(limit);
             const feedback = await cursor.toArray();
             res.send(feedback)
         });
@@ -162,7 +166,7 @@ async function run() {
 
 
 
-        app.delete('/reviews/:id', async (req, res) => {
+        app.delete('/delete/reviews/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await reviewCollection.deleteOne(query)
